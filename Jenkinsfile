@@ -15,15 +15,28 @@ pipeline {
                 sh 'python3 -m unittest discover -v'
             }
         }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying Python Application...'
+                sh '''
+                    mkdir -p deployed
+                    cp app.py deployed/
+                    python3 deployed/app.py > deployed/output.txt
+                    cat deployed/output.txt
+                '''
+            }
+        }
     }
 
     post {
         success {
-            echo 'Build and Test Completed Successfully!'
+            echo 'CI/CD Pipeline Completed Successfully!'
+            archiveArtifacts artifacts: 'deployed/**'
         }
 
         failure {
-            echo 'Pipeline Failed!'
+            echo 'CI/CD Pipeline Failed!'
         }
     }
 }
